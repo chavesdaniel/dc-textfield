@@ -14,19 +14,19 @@ protocol DCSimpleFieldVCDelegate {
 
 class DCSimpleFieldVC: UIViewController {
 
-    var titleLabel                  = DCTitleLabel(textAlignment: .left, fontSize: 14)
-    var textField                   = DCSimpleTF()
-    var fieldLine                   = UIView()
-    var isEditingField              = false
-    var closeTitleLabelBottom       = NSLayoutConstraint()
-    var openTitleLabelBottom        = NSLayoutConstraint()
-    var closeTextFieldHeightAnchor  = NSLayoutConstraint()
-    var openTextFieldHeightAnchor   = NSLayoutConstraint()
-    var closeFieldLineTopAnchor     = NSLayoutConstraint()
-    var openFieldLineTopAnchor      = NSLayoutConstraint()
-    var delegate:                   DCSimpleFieldVCDelegate?
-    let openTextFieldFont           = UIFont.systemFont(ofSize: 40, weight: .medium)
-    let closeTextFieldFont          = UIFont.systemFont(ofSize: 18, weight: .heavy)
+    private var titleLabel                  = DCTitleLabel(textAlignment: .left, fontSize: 14)
+    private var textField                   = DCSimpleTF()
+    private var fieldLine                   = UIView()
+    private var isEditingField              = false
+    private var closeTitleLabelBottom       = NSLayoutConstraint()
+    private var openTitleLabelBottom        = NSLayoutConstraint()
+    private var closeTextFieldHeightAnchor  = NSLayoutConstraint()
+    private var openTextFieldHeightAnchor   = NSLayoutConstraint()
+    private var closeFieldLineTopAnchor     = NSLayoutConstraint()
+    private var openFieldLineTopAnchor      = NSLayoutConstraint()
+    private var delegate:                   DCSimpleFieldVCDelegate?
+    private let openTextFieldFont           = UIFont.systemFont(ofSize: 40, weight: .medium)
+    private let closeTextFieldFont          = UIFont.systemFont(ofSize: 18, weight: .heavy)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,7 +53,11 @@ class DCSimpleFieldVC: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func addSubviews() {
+    func getValue() -> String? {
+        return self.textField.text
+    }
+    
+    private func addSubviews() {
         view.addSubview(titleLabel)
         view.addSubview(textField)
         view.addSubview(fieldLine)
@@ -64,16 +68,16 @@ class DCSimpleFieldVC: UIViewController {
         textField.addTarget(self, action: #selector(myTargetEditingDidBeginFunction), for: UIControl.Event.editingDidBegin)
     }
     
-    @objc func myTargetEditingDidBeginFunction() {
+    @objc private func myTargetEditingDidBeginFunction() {
         toogleFieldEditingAnimation()
     }
     
-    @objc func removeTextFieldFocus() {
+    @objc private func removeTextFieldFocus() {
         textField.resignFirstResponder()
         toogleFieldEditingAnimation()
     }
     
-    func layoutUI() {
+    private func layoutUI() {
         fieldLine.translatesAutoresizingMaskIntoConstraints = false
         fieldLine.backgroundColor           = .systemGray
         
@@ -116,7 +120,7 @@ class DCSimpleFieldVC: UIViewController {
         closeFieldLineTopAnchor.isActive    = !isEditing
     }
     
-    func toogleFieldEditingAnimation() {
+    private func toogleFieldEditingAnimation() {
         isEditing.toggle()
         
         self.textField.textColor        = self.isEditing ? UIColor.systemGreen : UIColor.black

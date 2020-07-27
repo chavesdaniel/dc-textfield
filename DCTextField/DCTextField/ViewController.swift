@@ -18,9 +18,6 @@ class ViewController: UIViewController {
         view.backgroundColor = .white
         layoutUI()
         add(childVC: dcSimpleController, to: fieldContainerVIew)
-//        let gestureRecognizer = UITapGestureRecognizer()
-//        gestureRecognizer.addTarget(self, action: #selector(toogleSimpleTFOpenClose))
-//        self.view.addGestureRecognizer(gestureRecognizer)
     }
 
     
