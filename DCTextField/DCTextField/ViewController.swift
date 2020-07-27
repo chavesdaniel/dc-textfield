@@ -10,29 +10,43 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    let fieldContainerVIew      = UIView()
-    let dcSimpleController      = DCSimpleFieldVC(title: "Nome", placeHolder: "Digite...", isInitialStateEditing: false)
+    let branchFieldContainerVIew        = UIView()
+    let dcBranchController              = DCSimpleFieldVC(title: "Agência", placeHolder: "Digite...", isInitialStateEditing: true, inputTextFieldType: DCInputTextFieldType.branchWithoutDigit)
+    
+    let accountFieldContainerVIew       = UIView()
+    let dcAccountController             = DCSimpleFieldVC(title: "Conta", placeHolder: "Digite...", isInitialStateEditing: false, inputTextFieldType: DCInputTextFieldType.account)
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         layoutUI()
-        add(childVC: dcSimpleController, to: fieldContainerVIew)
+        add(childVC: dcAccountController, to: accountFieldContainerVIew)
+        add(childVC: dcBranchController, to: branchFieldContainerVIew)
     }
 
     
     func layoutUI() {
-        view.addSubview(fieldContainerVIew)
-        fieldContainerVIew.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(branchFieldContainerVIew)
+        view.addSubview(accountFieldContainerVIew)
+        branchFieldContainerVIew.translatesAutoresizingMaskIntoConstraints = false
+        accountFieldContainerVIew.translatesAutoresizingMaskIntoConstraints = false
         
-        let padding: CGFloat = 50
+        let padding: CGFloat = 30
         
         NSLayoutConstraint.activate([
-            fieldContainerVIew.topAnchor.constraint(equalTo: view.topAnchor, constant: 150),
-            fieldContainerVIew.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            fieldContainerVIew.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-            fieldContainerVIew.heightAnchor.constraint(equalToConstant: 150)
+            branchFieldContainerVIew.topAnchor.constraint(equalTo: view.topAnchor, constant: 150),
+            branchFieldContainerVIew.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            branchFieldContainerVIew.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            branchFieldContainerVIew.heightAnchor.constraint(equalToConstant: 150)
         ])
+        
+        NSLayoutConstraint.activate([
+            accountFieldContainerVIew.topAnchor.constraint(equalTo: branchFieldContainerVIew.bottomAnchor, constant: 30),
+            accountFieldContainerVIew.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            accountFieldContainerVIew.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            accountFieldContainerVIew.heightAnchor.constraint(equalToConstant: 150)
+        ])
+        
     }
     
     func add(childVC: UIViewController, to containerView: UIView) {
@@ -40,10 +54,6 @@ class ViewController: UIViewController {
         containerView.addSubview(childVC.view)
         childVC.view.frame = containerView.bounds
         childVC.didMove(toParent: self)
-    }
-    
-    @objc func toogleSimpleTFOpenClose() {
-        dcSimpleController.toogleFieldEditingAnimation()
     }
 }
 

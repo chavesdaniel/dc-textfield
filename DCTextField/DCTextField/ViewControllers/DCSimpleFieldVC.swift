@@ -8,6 +8,10 @@
 
 import UIKit
 
+public enum DCInputTextFieldType {
+    case branchWithoutDigit, account, description
+}
+
 protocol DCSimpleFieldVCDelegate {
     func toggleOpenCloseField()
 }
@@ -18,15 +22,18 @@ class DCSimpleFieldVC: UIViewController {
     private var textField                   = DCSimpleTF()
     private var fieldLine                   = UIView()
     private var isEditingField              = false
-    private var closeTitleLabelBottom       = NSLayoutConstraint()
-    private var openTitleLabelBottom        = NSLayoutConstraint()
+    private var closeTextFieldTopAnchor       = NSLayoutConstraint()
+    private var openTextFieldTopAnchor        = NSLayoutConstraint()
     private var closeTextFieldHeightAnchor  = NSLayoutConstraint()
     private var openTextFieldHeightAnchor   = NSLayoutConstraint()
     private var closeFieldLineTopAnchor     = NSLayoutConstraint()
     private var openFieldLineTopAnchor      = NSLayoutConstraint()
     private var delegate:                   DCSimpleFieldVCDelegate?
-    private let openTextFieldFont           = UIFont.systemFont(ofSize: 40, weight: .medium)
+    private let openTextFieldFont           = UIFont.systemFont(ofSize: 50, weight: .medium)
     private let closeTextFieldFont          = UIFont.systemFont(ofSize: 18, weight: .heavy)
+    private var textFieldType:              DCInputTextFieldType!
+    private var inputTextMask               = ""
+    private var isValid                     = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,15 +42,14 @@ class DCSimpleFieldVC: UIViewController {
         addTextFieldEvents()
     }
     
-    init(title: String, placeHolder: String, isInitialStateEditing: Bool) {
+    init(title: String, placeHolder: String, isInitialStateEditing: Bool, inputTextFieldType: DCInputTextFieldType) {
         super.init(nibName: nil, bundle: nil)
         
-        
+        self.textFieldType                      = inputTextFieldType
         self.titleLabel.text                    = title
-        
-        self.textField.attributedPlaceholder    = NSAttributedString(string: "Digite...",
+        self.textField.delegate                 = self
+        self.textField.attributedPlaceholder    = NSAttributedString(string: placeHolder,
         attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemGray])
-        
         self.isEditing                          = isInitialStateEditing
         
         self.textField.resignFirstResponder()
@@ -57,6 +63,19 @@ class DCSimpleFieldVC: UIViewController {
         return self.textField.text
     }
     
+    private func setMask(for inputType:DCInputTextFieldType) {
+        switch inputType {
+        case .branchWithoutDigit:
+            inputTextMask = "####"
+            break
+        case .account:
+            inputTextMask = "#############"
+            break
+        case .description:
+            break
+        }
+    }
+    
     private func addSubviews() {
         view.addSubview(titleLabel)
         view.addSubview(textField)
@@ -65,16 +84,11 @@ class DCSimpleFieldVC: UIViewController {
     
     func addTextFieldEvents() {
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(removeTextFieldFocus)))
-        textField.addTarget(self, action: #selector(myTargetEditingDidBeginFunction), for: UIControl.Event.editingDidBegin)
-    }
-    
-    @objc private func myTargetEditingDidBeginFunction() {
-        toogleFieldEditingAnimation()
     }
     
     @objc private func removeTextFieldFocus() {
         textField.resignFirstResponder()
-        toogleFieldEditingAnimation()
+        toogleFieldEditingAnimation(shoulOpen: false)
     }
     
     private func layoutUI() {
@@ -88,30 +102,28 @@ class DCSimpleFieldVC: UIViewController {
         textField.font = fontField
         textField.textColor = isEditing ? .systemGreen : .black
         textField.tintColor = isEditing ? .systemGreen : .black
-        titleLabel.alpha    = isEditing ? 0 : 1
         
         NSLayoutConstraint.activate([
             
-            textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            textField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-            textField.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            
-            titleLabel.bottomAnchor.constraint(equalTo: textField.topAnchor, constant: -5),
+            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 5),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             titleLabel.heightAnchor.constraint(equalToConstant: padding),
+            
+            textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            textField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             
             fieldLine.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
             fieldLine.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             fieldLine.heightAnchor.constraint(equalToConstant: 1)
         ])
         
-        closeTitleLabelBottom               = titleLabel.bottomAnchor.constraint(equalTo: textField.topAnchor, constant: -5)
-        openTitleLabelBottom                = titleLabel.bottomAnchor.constraint(equalTo: textField.topAnchor, constant: -20)
-        openTitleLabelBottom.isActive       = isEditing
-        closeTitleLabelBottom.isActive      = !isEditing
+        closeTextFieldTopAnchor              = textField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5)
+        openTextFieldTopAnchor               = textField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20)
+        openTextFieldTopAnchor.isActive      = isEditing
+        closeTextFieldTopAnchor.isActive     = !isEditing
         closeTextFieldHeightAnchor          = textField.heightAnchor.constraint(equalToConstant: 20)
-        openTextFieldHeightAnchor           = textField.heightAnchor.constraint(equalToConstant: 44)
+        openTextFieldHeightAnchor           = textField.heightAnchor.constraint(equalToConstant: 55)
         openTextFieldHeightAnchor.isActive  = isEditing
         closeTextFieldHeightAnchor.isActive = !isEditing
         closeFieldLineTopAnchor             = fieldLine.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: closeFieldLinePadding)
@@ -120,56 +132,65 @@ class DCSimpleFieldVC: UIViewController {
         closeFieldLineTopAnchor.isActive    = !isEditing
     }
     
-    private func toogleFieldEditingAnimation() {
-        isEditing.toggle()
+    private func toogleFieldEditingAnimation(shoulOpen: Bool) {
         
-        self.textField.textColor        = self.isEditing ? UIColor.systemGreen : UIColor.black
-        UIView.transition(with: textField, duration: 0.1, options: .transitionCrossDissolve, animations: {
-            self.view.layoutIfNeeded()
-        })
-        
-        
-        
-        UIView.transition(with: titleLabel, duration: 0.3, options: .curveEaseOut, animations:{
-            self.titleLabel.alpha           = self.isEditing ? 0 : 1
-        })
-        
-        openTextFieldHeightAnchor.isActive  = isEditing
-        closeTextFieldHeightAnchor.isActive = !isEditing
-        textField.font                      = isEditing ? openTextFieldFont : closeTextFieldFont
-        textField.tintColor                 = isEditing ? .systemGreen : .black
-        
-        UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations:{
-            self.view.layoutIfNeeded()
-        })
-        
-        openTitleLabelBottom.isActive       = isEditing
-        closeTitleLabelBottom.isActive      = !isEditing
-        openFieldLineTopAnchor.isActive     = isEditing
-        closeFieldLineTopAnchor.isActive    = !isEditing
-        UIView.animate(withDuration: 0.2, delay: 0.1, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations:{
-            self.view.layoutIfNeeded()
-        })
+        self.textField.textColor            = shoulOpen ? UIColor.systemGreen : UIColor.black
+        self.textField.tintColor            = shoulOpen ? UIColor.systemGreen : UIColor.black
 
-        fieldLine.backgroundColor = isEditing ? .systemGray2: .systemGray
-        UIView.animate(withDuration: 0.2, delay: 0.1, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations:{
+        openTextFieldHeightAnchor.isActive  = shoulOpen
+        closeTextFieldHeightAnchor.isActive = !shoulOpen
+        
+        UIView.animate(withDuration: 0.2, delay: 0.1, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations:{
             self.view.layoutIfNeeded()
         })
         
+        self.textField.font = shoulOpen ? self.openTextFieldFont : self.closeTextFieldFont
+        
+        openTextFieldTopAnchor.isActive     = shoulOpen
+        closeTextFieldTopAnchor.isActive    = !shoulOpen
+        openFieldLineTopAnchor.isActive     = shoulOpen
+        closeFieldLineTopAnchor.isActive    = !shoulOpen
+        self.fieldLine.backgroundColor      = shoulOpen ? .systemGray2: .systemGray
+        
+        self.textField.alpha = shoulOpen ? 0 : 1
+        UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations:{
+            self.view.layoutIfNeeded()
+            self.textField.alpha = 1
+        })
         
     }
-    
-    private func changeColor(to textColor: UIColor) {
-        let changeColor = CATransition()
-        changeColor.duration = 0.6
-        
-        CATransaction.begin()
-        CATransaction.setCompletionBlock {
-            self.textField.layer.add(changeColor, forKey: nil)
-            self.textField.textColor = textColor
-        }
-        
-        CATransaction.commit()
-    }
-    
 }
+
+extension DCSimpleFieldVC:UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if !self.isEditing {
+            textField.resignFirstResponder()
+            return false
+        }
+        else {
+            return true
+        }
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        self.isEditing = true
+        self.toogleFieldEditingAnimation(shoulOpen: isEditing)
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        self.isEditing = false
+        textField.resignFirstResponder()
+        self.toogleFieldEditingAnimation(shoulOpen: isEditing)
+    }
+    
+    private func validateBranchWithoutDigitValidator(updatedText: String) -> Bool {
+        if(updatedText.contains("-")) {
+            return false
+        }
+        if(updatedText.count > self.inputTextMask.count) {
+            return false
+        }
+        return true
+    }
+}
+

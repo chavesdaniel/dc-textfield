@@ -32,7 +32,7 @@ class DCSimpleTF: UITextField {
         
         textAlignment               = .left
         adjustsFontSizeToFitWidth   = true
-        minimumFontSize             = 12
+        minimumFontSize             = 40
         
         autocorrectionType          = .no
         returnKeyType               = .done
