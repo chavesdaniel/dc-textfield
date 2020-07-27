@@ -60,10 +60,16 @@ class DCSimpleFieldVC: UIViewController {
     }
     
     func addTextFieldEvents() {
-        textField.addTarget(self, action: #selector(textFieldEdditDidBegin), for: UIControl.Event.editingDidBegin)
+        self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(removeTextFieldFocus)))
+        textField.addTarget(self, action: #selector(myTargetEditingDidBeginFunction), for: UIControl.Event.editingDidBegin)
     }
     
-    @objc func textFieldEdditDidBegin(textField: UITextField) {
+    @objc func myTargetEditingDidBeginFunction() {
+        toogleFieldEditingAnimation()
+    }
+    
+    @objc func removeTextFieldFocus() {
+        textField.resignFirstResponder()
         toogleFieldEditingAnimation()
     }
     
