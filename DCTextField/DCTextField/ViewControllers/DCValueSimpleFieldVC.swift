@@ -1,5 +1,5 @@
 //
-//  DCSimpleFieldVC.swift
+//  DCValueSimpleFieldVC.swift
 //  DCTextField
 //
 //  Created by Daniel on 27/07/20.
@@ -8,17 +8,10 @@
 
 import UIKit
 
-public enum DCInputTextFieldType {
-    case branchWithoutDigit, account, description
-}
-
-protocol DCSimpleFieldVCDelegate {
-    func toggleOpenCloseField()
-}
-
-class DCSimpleFieldVC: UIViewController {
+class DCValueSimpleFieldVC: UIViewController {
 
     private var titleLabel                  = DCTitleLabel(textAlignment: .left, fontSize: 14)
+    private var monetaryLabel               = DCTitleLabel(textAlignment: .left, fontSize: 15)
     private var textField                   = DCSimpleTF()
     private var fieldLine                   = UIView()
     private var isEditingField              = false
@@ -53,7 +46,7 @@ class DCSimpleFieldVC: UIViewController {
         
         self.textField.resignFirstResponder()
     }
-    
+        
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -61,23 +54,15 @@ class DCSimpleFieldVC: UIViewController {
     func getValue() -> String? {
         return self.textField.text
     }
-    
+        
     private func setMask(for inputType:DCInputTextFieldType) {
-        switch inputType {
-        case .branchWithoutDigit:
-            inputTextMask = "####"
-            break
-        case .account:
-            inputTextMask = "#############"
-            break
-        case .description:
-            break
-        }
+        
     }
     
     private func addSubviews() {
         view.addSubview(titleLabel)
         view.addSubview(textField)
+        view.addSubview(monetaryLabel)
         view.addSubview(fieldLine)
     }
     
@@ -97,6 +82,7 @@ class DCSimpleFieldVC: UIViewController {
         let padding: CGFloat                = 16
         let closeFieldLinePadding: CGFloat  = 5
         let openFieldLinePadding: CGFloat   = 15
+        let paddingToMonetaryLabel: CGFloat = 10
         let fontField = isEditing ? openTextFieldFont : closeTextFieldFont
         textField.font = fontField
         textField.textColor = isEditing ? .systemGreen : .black
@@ -109,8 +95,13 @@ class DCSimpleFieldVC: UIViewController {
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             titleLabel.heightAnchor.constraint(equalToConstant: padding),
             
-            textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding + paddingToMonetaryLabel),
             textField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            
+            monetaryLabel.bottomAnchor.constraint(equalTo: textField.bottomAnchor),
+            monetaryLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            monetaryLabel.bottomAnchor.constraint(equalTo: textField.bottomAnchor),
+            monetaryLabel.heightAnchor.constraint(equalToConstant: 17),
             
             fieldLine.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
             fieldLine.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
@@ -130,7 +121,7 @@ class DCSimpleFieldVC: UIViewController {
         openFieldLineTopAnchor.isActive     = isEditing
         closeFieldLineTopAnchor.isActive    = !isEditing
     }
-    
+        
     private func toogleFieldEditingAnimation(shoulOpen: Bool) {
         
         self.textField.textColor            = shoulOpen ? UIColor.systemGreen : UIColor.black
@@ -160,7 +151,9 @@ class DCSimpleFieldVC: UIViewController {
     }
 }
 
-extension DCSimpleFieldVC: UITextFieldDelegate {
+
+
+extension DCValueSimpleFieldVC: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if !self.isEditing {
             textField.resignFirstResponder()
@@ -192,4 +185,3 @@ extension DCSimpleFieldVC: UITextFieldDelegate {
         return true
     }
 }
-

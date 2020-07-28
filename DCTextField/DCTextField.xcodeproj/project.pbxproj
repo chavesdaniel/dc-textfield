@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		653D141E24CF66BA0088EBC7 /* DCValueSimpleFieldVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653D141D24CF66BA0088EBC7 /* DCValueSimpleFieldVC.swift */; };
 		65C8C1C424CE7A1D008408EA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C8C1C324CE7A1D008408EA /* AppDelegate.swift */; };
 		65C8C1C624CE7A1D008408EA /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C8C1C524CE7A1D008408EA /* SceneDelegate.swift */; };
 		65C8C1C824CE7A1D008408EA /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C8C1C724CE7A1D008408EA /* ViewController.swift */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		653D141D24CF66BA0088EBC7 /* DCValueSimpleFieldVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DCValueSimpleFieldVC.swift; sourceTree = "<group>"; };
 		65C8C1C024CE7A1C008408EA /* DCTextField.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DCTextField.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		65C8C1C324CE7A1D008408EA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		65C8C1C524CE7A1D008408EA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -85,6 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				65C8C1DE24CE7F38008408EA /* DCSimpleFieldVC.swift */,
+				653D141D24CF66BA0088EBC7 /* DCValueSimpleFieldVC.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -168,6 +171,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				65C8C1DF24CE7F38008408EA /* DCSimpleFieldVC.swift in Sources */,
+				653D141E24CF66BA0088EBC7 /* DCValueSimpleFieldVC.swift in Sources */,
 				65C8C1C824CE7A1D008408EA /* ViewController.swift in Sources */,
 				65C8C1C424CE7A1D008408EA /* AppDelegate.swift in Sources */,
 				65C8C1DD24CE7D9A008408EA /* DCSimpleTF.swift in Sources */,
